@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   print_action.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jerdos-s <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,27 +12,30 @@
 
 #include "philo.h"
 
-unsigned long long	ft_atoi(char *str)
+char	*get_message(enum e_action	action)
 {
-	unsigned long long	current;
-
-	current = 0;
-	while(*str >= '0' && *str <= '9')
-	{
-		current *= 10;
-		current += *str - '0';
-		str++;
-	}
-	return ((int)current);
+	if (action == take_fork)
+		return ("has taken a fork");
+	if (action == eating)
+		return ("is eating");
+	if (action == sleeping)
+		return ("is sleeping");
+	if (action == thinking)
+		return ("is thinking");
+	if (action == died)
+		return ("died");
+	return (NULL);
 }
 
-unsigned long long	timestamp(void)
+void	print_action(t_philo *philo, enum e_action action)
 {
-	struct timeval		tv;
-	unsigned long long	res;
+	unsigned long long	current_time;
+	t_data				*data;
+	char				*msg;
 
-	gettimeofday(&tv, NULL);
-	res = tv.tv_sec * 1000;
-	res += tv.tv_usec / 1000;
-	return (res);
+	msg = get_message(action);
+	data = philo->data;
+	current_time = timestamp() - data->start_time;
+	printf("value start => %llu current => %llu\n", data->start_time, timestamp());
+	printf("%llu\t\t%d %s\n", current_time, philo->id, msg);
 }

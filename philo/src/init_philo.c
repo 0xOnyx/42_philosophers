@@ -17,7 +17,9 @@ static int	create_philo(t_philo **current, int id, t_data *data)
 	t_philo	*node;
 
 	node = (t_philo *)malloc(sizeof(t_philo));
-	node->deat = 0;
+	if (!node)
+		return (1);
+	node->dead = 0;
 	node->eat = 0;
 	node->id = id;
 	node->data = data;
@@ -51,14 +53,15 @@ int	init_philo(t_data *data)
 	t_philo	*current_philo;
 
 	i = 0;
+	data->start_time = timestamp();
 	while (i < data->options.philo_len)
 	{
-		if (create_philo(&current_philo, i, (void *)current_philo))
+		if (create_philo(&current_philo, i, data))
 			return (1);
 		add_front(&data->first_philo, current_philo);
+		i++;
 	}
 	current_philo->next = data->first_philo;
-	data->start_time = timestamp();
 	return (0);
 }
 

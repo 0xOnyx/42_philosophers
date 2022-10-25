@@ -3,20 +3,49 @@
 static void	print_usage(char *name)
 {
 	printf("usage =>\n");
-	printf("./%s number_of_philosophers time_to_die time_to_eat time_to_sleep\n"
+	printf("%s number_of_philosophers time_to_die time_to_eat time_to_sleep\n"
 		   "[number_of_times_each_philosopher_must_eat]", name);
 }
 
 static int	init_arg(int argc, char **argv, t_data *data)
 {
-	data->options.philo_len = ft_atoi(argv[1]);
+	data->options.philo_len = (int)ft_atoi(argv[1]);
 	data->options.time_to_die = ft_atoi(argv[2]);
 	data->options.time_to_eat = ft_atoi(argv[3]);
 	data->options.time_to_sleep = ft_atoi(argv[4]);
-	if (argc > 4)
-		data->options.max_eat = ft_atoi(argv[5]);
+	if (argc > 5)
+		data->options.max_eat = (int)ft_atoi(argv[5]);
 	else
 		data->options.max_eat = -1;
+	if (data->options.philo_len < 2)
+		return (1);
+	return (0);
+}
+
+static void	free_all(t_data data)
+{
+	int	i;
+	t_philo	*current;
+	t_philo	*swap;
+
+	i = 0;
+	current = data.first_philo;
+	pthread_join(data.thread_check, NULL);
+	while (current && i++ < data.options.philo_len)
+	{
+		pthread_join(current->thread, NULL);
+		swap = current->next;
+		pthread_mutex_destroy(&current->fork);
+		free(current);
+		current = swap;
+	}
+	pthread_join(data.thread_check, NULL);
+	pthread_mutex_destroy(&data.check_eating);
+}
+
+void	print_error(char *str)
+{
+	printf("[ERROR]:\t%s\n", str);
 }
 
 int	main(int argc, char **argv)
@@ -31,10 +60,10 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	if (init_arg(argc, argv, &data)
-		&& init_philo(&data))
-		&& init_checker(&data))
+		|| init_philo(&data)
+		|| init_checker(&data))
 	{
-		print_error();
+		print_error("init vars");
 		free_all(data);
 		return (1);
 	}

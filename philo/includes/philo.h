@@ -21,11 +21,11 @@ enum	e_action
 
 typedef struct	s_option
 {
-	int 	philo_len;
-	int 	time_to_die;
-	int 	time_to_eat;
-	int		time_to_sleep;
-	int 	max_eat;
+	int					philo_len;
+	int					max_eat;
+	unsigned long long	time_to_die;
+	unsigned long long	time_to_eat;
+	unsigned long long	time_to_sleep;
 }	t_options;
 
 typedef struct	s_philo
@@ -41,7 +41,7 @@ typedef struct	s_philo
 }	t_philo;
 
 struct	s_data
-{
+{	int 				all_dead;
 	unsigned long long	start_time;
 	t_philo				*first_philo;
 	pthread_t 			thread_check;
@@ -49,11 +49,17 @@ struct	s_data
 	t_options 			options;
 };
 
+unsigned long long	ft_atoi(char *str);
+
 int		init_philo(t_data *data);
 int 	init_checker(t_data *data);
-void	*routine_philo(void *);
-void	*routine_checker(void *);
-void	print_action(t_data *data, enum e_action action);
+
+void	*routine_philo(void *data);
+void	*routine_checker(void *raw);
+
+void	print_error(char *str);
+void	print_action(t_philo *philo, enum e_action action);
+
 
 unsigned long long	timestamp(void);
 #endif

@@ -5,7 +5,7 @@ SRC_OBJ		= objs/
 SRC_HEADER	= includes/
 
 HEADER	= philo.h
-SRC		= main.c init_philo.c routine_philo.c utils.c
+SRC		= init_philo.c main.c routine_philo.c utils.c routine_checker.c print_action.c
 
 CFLAGS	= -Wall -Wextra -Werror -g3 -fsanitize=address
 OPTIONS	= -I$(SRC_HEADER)
@@ -20,7 +20,7 @@ CC = gcc
 RM = rm -f
 
 $(SRC_OBJ)%.o: $(SRC_PATH)%.c $(HEADERS)
-	$(CC) $(CLFAGS) $(OPTIONS) -o $(@) -c $(<)
+	$(CC) $(CFLAGS) $(OPTIONS) -o $(@) -c $(<)
 
 all: $(NAME)
 
