@@ -16,7 +16,7 @@ static void	print_usage(char *name)
 {
 	printf("usage =>\n");
 	printf("%s number_of_philosophers time_to_die time_to_eat time_to_sleep\n"
-		"[number_of_times_each_philosopher_must_eat]", name);
+		"[number_of_times_each_philosopher_must_eat]\n", name);
 }
 
 static int	init_arg(int argc, char **argv, t_data *data)
