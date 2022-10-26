@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-static int check_all_eat(t_data *data)
+static int	check_all_eat(t_data *data)
 {
 	t_philo	*current;
 	int		i;
@@ -20,7 +20,7 @@ static int check_all_eat(t_data *data)
 	i = 0;
 	current = data->first_philo;
 	while (i < data->options.philo_len && current->eat >= data->options.max_eat
-		   && data->options.max_eat > 0)
+		&& data->options.max_eat > 0)
 	{
 		current = current->next;
 		i++;
@@ -33,34 +33,40 @@ static int check_all_eat(t_data *data)
 	return (0);
 }
 
-void	*routine_checker(void *raw)
+static int	check_philo(t_data *data)
 {
 	unsigned long long	current_time;
 	t_philo				*current;
-	t_data				*data;
 	int					i;
 
-	data = (t_data *)raw;
-	current = data->first_philo;
 	i = 0;
+	current = data->first_philo;
+	while (i++ < data->options.philo_len)
+	{
+		current_time = timestamp();
+		pthread_mutex_lock(&data->check_eating);
+		if (current->dead
+			|| current_time - current->last_eat > data->options.time_to_die)
+		{
+			print_action(current, died);
+			current->dead = 1;
+		}
+		pthread_mutex_unlock(&data->check_eating);
+		if (current->dead)
+			return (1);
+		current = current->next;
+	}
+	return (0);
+}
+
+void	*routine_checker(void *raw)
+{
+	t_data				*data;
+
+	data = (t_data *)raw;
 	while (!data->all_dead)
 	{
-		i = 0;
-		while (i++ < data->options.philo_len)
-		{
-			current_time = timestamp();
-			pthread_mutex_lock(&data->check_eating);
-			if (current->dead || current_time - current->last_eat > data->options.time_to_die)
-			{
-				print_action(current, died);
-				current->dead = 1;
-			}
-			pthread_mutex_unlock(&data->check_eating);
-			if (current->dead)
-				break ;
-			current = current->next;
-		}
-		if (current->dead)
+		if (check_philo(data))
 			break ;
 		if (check_all_eat(data))
 			break ;
