@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jerdos-s <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/24 15:25:47 by jerdos-s          #+#    #+#             */
-/*   Created: 2022/10/24 15:25:47 by jerdos-s         ###   ########.fr       */
+/*   Created: 2022/10/26 15:33:12 by jerdos-s          #+#    #+#             */
+/*   Updated: 2022/10/26 15:33:13 by jerdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-char	*get_message(enum e_action	action)
+char	*get_message(enum e_action action)
 {
 	if (action == take_fork)
 		return ("has taken a fork");
@@ -33,9 +33,12 @@ void	print_action(t_philo *philo, enum e_action action)
 	t_data				*data;
 	char				*msg;
 
+	if (philo->dead || philo->data->all_dead)
+		return ;
+	pthread_mutex_lock(&philo->data->print_action);
 	msg = get_message(action);
 	data = philo->data;
 	current_time = timestamp() - data->start_time;
-	printf("value start => %llu current => %llu\n", data->start_time, timestamp());
-	printf("%llu\t\t%d %s\n", current_time, philo->id, msg);
+	printf("%llu\t\t%d %s\n", current_time, philo->id + 1, msg);
+	pthread_mutex_unlock(&philo->data->print_action);
 }

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jerdos-s <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/25 14:41:38 by jerdos-s          #+#    #+#             */
-/*   Created: 2022/10/25 14:41:38 by jerdos-s         ###   ########.fr       */
+/*   Created: 2022/10/26 15:35:52 by jerdos-s          #+#    #+#             */
+/*   Updated: 2022/10/26 15:35:54 by jerdos-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	waiting(unsigned long long time, t_philo *philo)
 	{
 		usleep(50);
 		if ((timestamp() - current_time) >= time)
-			break;
+			break ;
 	}
 }
 
@@ -29,6 +29,8 @@ static void	eating_philo(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->fork);
 	print_action(philo, take_fork);
+	if (philo->next == philo)
+		return ;
 	pthread_mutex_lock(&philo->next->fork);
 	pthread_mutex_lock(&philo->data->check_eating);
 	print_action(philo, take_fork);
@@ -46,16 +48,17 @@ void	*routine_philo(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
+	philo->last_eat = timestamp();
 	if (philo->id % 2)
 		usleep(1500);
-	while (!philo->data->all_dead)
+	while (!philo->dead)
 	{
 		eating_philo(philo);
-		printf("waiting for sleeping\n");
+		if (philo->data->all_dead || philo->next == philo)
+			break ;
 		print_action(philo, sleeping);
 		waiting(philo->data->options.time_to_sleep, philo);
 		print_action(philo, thinking);
 	}
-	printf("finish\n");
 	return (NULL);
 }
