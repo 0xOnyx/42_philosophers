@@ -17,9 +17,10 @@ OBJS = $(addprefix $(SRC_OBJ),$(OBJ))
 HEADERS = $(addprefix $(SRC_HEADER),$(HEADER))
 
 CC = gcc
-RM = rm -f
+RM = rm -rf
 
 $(SRC_OBJ)%.o: $(SRC_PATH)%.c $(HEADERS)
+	mkdir -p $(SRC_OBJ)
 	$(CC) $(CFLAGS) $(OPTIONS) -o $(@) -c $(<)
 
 all: $(NAME)
@@ -31,6 +32,7 @@ clean:
 	$(RM) $(OBJS)
 
 fclean: clean
+	$(RM) $(SRC_OBJ)
 	$(RM) $(NAME)
 
 re: fclean all
